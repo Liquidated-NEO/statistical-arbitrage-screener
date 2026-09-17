@@ -1,4 +1,4 @@
-Statistical Arbitrage & Cointegration Screener
+Statistical Arbitrage & Cointegration Screener.
 Most retail traders lose money trying to trade basic price correlation. Two assets can move in the same direction for a month and then permanently drift apart, wiping out a trading account.
 
 This project was built to test a real mathematical edge: Statistical Cointegration.
