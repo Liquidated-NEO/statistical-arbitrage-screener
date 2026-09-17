@@ -20,7 +20,8 @@ Entry Triggers: The system buys the spread when the Z-score drops below -2.0 and
 Exit Triggers: The system exits all active positions the moment the Z-score reverts to the historical mean (0.0).
 
 Installation & Execution
-Install dependencies: pip install dukascopy-python pandas statsmodels matplotlib
+Install dependencies:
+pip install dukascopy-python pandas statsmodels matplotlib
 
 Step 1 (Ingest Data): Run python Form.py to fetch historical hourly data and generate the aligned dataset.
 
