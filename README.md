@@ -1,31 +1,40 @@
-Statistical Cointegration Screener
-This repository implements an automated statistical arbitrage pipeline for Forex and Precious Metals. It ingests asynchronous historical data from Dukascopy, normalizes the time-series matrix, and runs Engle-Granger tests to identify historically stationary spreads. The tool programmatically filters out spurious correlations to isolate statistically significant, mean-reverting trading pairs.
+Statistical Arbitrage & Cointegration Screener
+Most retail traders lose money trying to trade basic price correlation. Two assets can move in the same direction for a month and then permanently drift apart, wiping out a trading account.
 
-Pipeline Architecture
-The system is built on a fault-tolerant, 4-stage quantitative pipeline:
+This project was built to test a real mathematical edge: Statistical Cointegration.
 
-Data Ingestion: Fetches multi-year historical data via the Dukascopy API, strictly limiting to bid prices to prevent spread-widening noise.
+Instead of trading on gut feeling, this Python pipeline ingests raw market data, mathematically proves whether a mean-reverting relationship exists, and simulates the actual net profit of trading that spread.
 
-Matrix Alignment: Forces explicit datetime indexing, resamples to hourly intervals, and outer-joins asynchronous data to prevent look-ahead bias and drop missing market gaps.
+The Pipeline
+This is a 3-stage, fault-tolerant system built for Forex and Precious Metals:
 
-Statistical Screening: Iterates through portfolio combinations using the statsmodels Engle-Granger two-step cointegration test to mathematically prove stationarity (p-value < 0.05).
+Data Ingestion (01_data_ingestion.py): Pulls multi-year historical bid data directly from the Dukascopy API. It forces explicit datetime indexing and outer-joins asynchronous time-series data to eliminate look-ahead bias and handle missing market gaps.
 
-OLS Regression: Calculates the hedge ratio via Ordinary Least Squares regression to dynamically weight the spread, avoiding the mathematical flaws of 1:1 nominal subtraction.
+Statistical Screener (02_statistical_screener.py): Iterates through portfolio combinations and runs the statsmodels Engle-Granger two-step test. It aggressively filters out spurious correlations and only flags pairs mathematically proven to be stationary (p-value < 0.05).
 
-Signal Generation (Rolling Z-Score)
-The system utilizes a state machine to track the rolling Z-Score of the OLS-weighted spread, preventing signal spam during extended deviations. Trades are executed mechanically:
+Backtest Engine (03_backtest_engine.py): Calculates the hedge ratio via Ordinary Least Squares (OLS) regression. It tracks the rolling Z-Score of the spread and executes a state machine to generate mechanical buy/sell signals without spamming orders.
 
-Entry Triggers: The system buys the spread when the Z-score drops below -2.0 and sells the spread when it spikes above +2.0.
+The Reality Check: Net PNL vs. Gross PNL
+A strategy that looks highly profitable on paper will often bleed money in live markets due to broker fees.
 
-Exit Triggers: The system exits all active positions the moment the Z-score reverts to the historical mean (0.0).
+This backtester explicitly deducts simulated transaction costs (spread + slippage) from every single round-trip execution. To overcome this friction, the state machine requires a severe Z-Score deviation (+/- 2.5 standard deviations) before deploying capital. This ensures the gross profit per trade is actually large enough to survive real-world execution costs.
 
-Installation & Execution
-```powershell
+How to Run It
 Install dependencies:
+```Powershell
+Bash
 pip install dukascopy-python pandas statsmodels matplotlib
+Execute the pipeline in order:
 ```
-Step 1 (Ingest Data): Run python Form.py to fetch historical hourly data and generate the aligned dataset.
-
-Step 2 (Find Edge): Run python Engle-Granger.py to test the portfolio for statistical cointegration.
-
-Step 3 (Generate Signals): Run python signal_generate_2.py to calculate OLS regression, trigger the state machine, and render the visual analytics.
+```
+Run
+python 01_data_ingestion.py to download and align the dataset.
+```
+```
+Run
+ python 02_statistical_screener.py to mathematically prove the edge.
+```
+```
+Run
+ python 03_backtest_engine.py to calculate OLS regression, simulate net profit, and render the visual analytics.
+```
