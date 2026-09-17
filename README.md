@@ -20,10 +20,10 @@ Entry Triggers: The system buys the spread when the Z-score drops below -2.0 and
 Exit Triggers: The system exits all active positions the moment the Z-score reverts to the historical mean (0.0).
 
 Installation & Execution
-'''powershell
+```powershell
 Install dependencies:
 pip install dukascopy-python pandas statsmodels matplotlib
-'''
+```
 Step 1 (Ingest Data): Run python Form.py to fetch historical hourly data and generate the aligned dataset.
 
 Step 2 (Find Edge): Run python Engle-Granger.py to test the portfolio for statistical cointegration.
